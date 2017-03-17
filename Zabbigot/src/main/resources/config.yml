@@ -1,0 +1,15 @@
+# Use to monitor multiple servers.
+# Sends the value specified here as an argument.
+Identifier: "Minecraft"
+
+# Example:
+# Identifier: "Minecraft" -> "minecraft.tps[Minecraft]"
+# Identifier: "Zabbigot" -> "minecraft.tps[Zabbigot]"
+
+# 300000 ms = 5min 
+Period: 300000
+
+Zabbix:
+  Server: "zabbix.example.com"
+  Port: 10051
+  Hostname: "MinecraftServer"

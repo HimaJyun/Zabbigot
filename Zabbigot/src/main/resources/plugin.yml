@@ -1,0 +1,5 @@
+main: jp.jyn.zabbigot.Zabbitgot
+name: "${project.artifactId}"
+version: "${project.version}"
+website: "https://jyn.jp/"
+author: '@HimaJyun'

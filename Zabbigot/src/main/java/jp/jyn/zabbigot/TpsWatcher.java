@@ -6,7 +6,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 public class TpsWatcher extends BukkitRunnable {
 
 	// 2のn乗
-	private final static int MAX_SAMPLING_SIZE = 256;
+	public final static int MAX_SAMPLING_SIZE = 256;
 
 	private int tickCount = 0;
 	private long[] ticks = new long[MAX_SAMPLING_SIZE];

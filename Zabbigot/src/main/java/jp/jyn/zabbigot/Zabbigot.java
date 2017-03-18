@@ -31,7 +31,10 @@ public class Zabbigot extends JavaPlugin {
 		getCommand("zabbigot").setExecutor(new Command(this));
 
 		// 送信開始
-		sender = service.scheduleAtFixedRate(new StatusSender(this), config.getPeriod(), config.getPeriod(), TimeUnit.SECONDS);
+		sender = service.scheduleAtFixedRate(new StatusSender(this),
+				TpsWatcher.MAX_SAMPLING_SIZE / 20,
+				config.getPeriod(),
+				TimeUnit.SECONDS);
 	}
 
 	@Override

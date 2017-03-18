@@ -12,7 +12,7 @@ public class TpsWatcher extends BukkitRunnable {
 	private long[] ticks = new long[MAX_SAMPLING_SIZE];
 
 	public TpsWatcher(Plugin plg) {
-		this(plg, 100);
+		this(plg, 0);
 	}
 
 	public TpsWatcher(Plugin plg, long delay) {

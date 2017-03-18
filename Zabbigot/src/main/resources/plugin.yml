@@ -1,4 +1,4 @@
-main: jp.jyn.zabbigot.Zabbitgot
+main: jp.jyn.zabbigot.Zabbigot
 name: "${project.artifactId}"
 version: "${project.version}"
 website: "https://jyn.jp/"

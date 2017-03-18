@@ -1,7 +1,7 @@
 main: jp.jyn.zabbigot.Zabbigot
 name: "${project.artifactId}"
 version: "${project.version}"
-website: "https://jyn.jp/"
+website: "https://github.com/HimaJyun/Zabbigot"
 author: '@HimaJyun'
 
 commands:

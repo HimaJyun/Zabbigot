@@ -7,6 +7,8 @@ import java.util.concurrent.TimeUnit;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
+import jp.jyn.zabbigot.command.Executor;
+
 public class Zabbigot extends JavaPlugin {
 
 	private ConfigStruct config;

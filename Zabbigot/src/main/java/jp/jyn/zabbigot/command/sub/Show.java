@@ -1,46 +1,31 @@
-package jp.jyn.zabbigot;
+package jp.jyn.zabbigot.command.sub;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Server;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
-public class Executor implements CommandExecutor {
+import jp.jyn.zabbigot.TpsWatcher;
+import jp.jyn.zabbigot.Zabbigot;
+import jp.jyn.zabbigot.command.SubBase;
+
+public class Show extends SubBase {
 
 	private final StringBuilder builder = new StringBuilder();
 	private final TpsWatcher watcher;
-	private final Zabbigot zabbigot;
 
-	public Executor(Zabbigot zabbigot) {
-		this.zabbigot = zabbigot;
+	public Show(Zabbigot zabbigot) {
+		super("zabbigot.show");
 		this.watcher = zabbigot.getTpsWatcher();
 	}
 
 	@Override
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-		if (args.length > 0 && args[0].equalsIgnoreCase("reload")) {
-			if (!sender.hasPermission("zabbigot.reload")) {
-				sender.sendMessage(ChatColor.RED + "You don't have permission!!");
-				return true;
-			}
-
-			zabbigot.onDisable();
-			zabbigot.onEnable();
-			sender.sendMessage(ChatColor.GREEN + "Zabbigot has been reloaded.");
-		} else {
-			showStatus(sender);
-		}
-
-		return true;
-	}
-
-	private void showStatus(CommandSender sender) {
-		if (!sender.hasPermission("zabbigot.show")) {
-			sender.sendMessage(ChatColor.RED + "You don't have permission!!");
-			return;
-		}
+	protected void exec(CommandSender sender) {
+		/*
+		 * ======== Zabbigot (Player: 0/20) ========
+		 * TPS: [####################] 20.00 (100.0%)
+		 * MEM: [###################_] 7832.4MB/8192.0MB (95.6%)
+		 */
 
 		Server server = Bukkit.getServer();
 		sender.sendMessage(ChatColor.GREEN + "========" + ChatColor.RESET

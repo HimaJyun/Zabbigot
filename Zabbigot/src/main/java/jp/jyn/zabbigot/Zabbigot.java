@@ -12,13 +12,13 @@ public class Zabbigot extends JavaPlugin {
 
 	private ConfigStruct config;
 
-	private TpsWatcher tps;
+	private TpsWatcher watcher;
 	private ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
 	private ScheduledFuture<?> sender;
 
 	@Override
 	public void onEnable() {
-		if (config != null) { // どれかがnullでなければリロード呼び出しなので無効化する
+		if (config != null) { // configがnullでなければリロード呼び出しなので無効化する
 			onDisable();
 		}
 
@@ -26,7 +26,7 @@ public class Zabbigot extends JavaPlugin {
 		config = (config == null ? new ConfigStruct(this) : config.reloadConfig());
 
 		// TPSの記録を開始
-		tps = new TpsWatcher(this);
+		watcher = new TpsWatcher(this);
 		// 送信開始
 		sender = service.scheduleAtFixedRate(new StatusSender(this), config.getPeriod(), config.getPeriod(), TimeUnit.SECONDS);
 	}
@@ -37,7 +37,7 @@ public class Zabbigot extends JavaPlugin {
 		HandlerList.unregisterAll(this);
 
 		// TPS記録を止める
-		tps.cancel();
+		watcher.cancel();
 
 		// 送信を止める
 		if (sender != null) {
@@ -50,7 +50,7 @@ public class Zabbigot extends JavaPlugin {
 		return config;
 	}
 
-	public TpsWatcher getTpsWatchar() {
-		return tps;
+	public TpsWatcher getTpsWatcher() {
+		return watcher;
 	}
 }

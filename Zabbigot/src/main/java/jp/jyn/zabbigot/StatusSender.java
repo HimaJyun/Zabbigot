@@ -15,7 +15,7 @@ import io.github.hengyunabc.zabbix.sender.ZabbixSender;
 public class StatusSender implements Runnable {
 
 	private final ConfigStruct config;
-	private final TpsWatcher tps;
+	private final TpsWatcher watcher;
 
 	private final String hostname;
 
@@ -30,7 +30,7 @@ public class StatusSender implements Runnable {
 	public StatusSender(Zabbigot zabbigot) {
 		this.config = zabbigot.getConfigStruct();
 		this.hostname = config.getZabbixHostname();
-		this.tps = zabbigot.getTpsWatchar();
+		this.watcher = zabbigot.getTpsWatcher();
 
 		keyTps = "minecraft.tps[" + config.getIdentifier() + "]";
 		keyUser = "minecraft.user[" + config.getIdentifier() + "]";
@@ -50,7 +50,7 @@ public class StatusSender implements Runnable {
 		// Zabbixが小数点以下4桁までなので揃える
 		data.add(getDataObject(
 				keyTps,
-				(new BigDecimal(tps.getTPS()))
+				(new BigDecimal(watcher.getTPS()))
 						.setScale(4, RoundingMode.DOWN)
 						.toPlainString()));
 

@@ -9,6 +9,7 @@ import java.util.List;
 import org.bukkit.Bukkit;
 
 import io.github.hengyunabc.zabbix.sender.DataObject;
+import io.github.hengyunabc.zabbix.sender.SenderResult;
 import io.github.hengyunabc.zabbix.sender.ZabbixSender;
 
 public class StatusSender implements Runnable {
@@ -39,30 +40,29 @@ public class StatusSender implements Runnable {
 
 	@Override
 	public void run() {
+		List<DataObject> data = new ArrayList<>();
+		// Zabbixが小数点以下4桁までなので揃える
+		data.add(getDataObject(
+				keyTps,
+				(new BigDecimal(tps.getTPS()))
+						.setScale(4, RoundingMode.DOWN)
+						.toPlainString()));
+
+		// オンラインユーザ数取得、サブスレッドからの実行でも例外は出ない
+		data.add(getDataObject(keyUser, String.valueOf(Bukkit.getOnlinePlayers().size())));
+
+		// メモリ
+		long free = runtime.freeMemory();
+		data.add(getDataObject(keyMemUsed, String.valueOf(runtime.totalMemory() - free)));
+		data.add(getDataObject(keyMemFree, String.valueOf(free)));
+
 		try {
-			List<DataObject> data = new ArrayList<>();
-			// Zabbixが小数点以下4桁までなので揃える
-			data.add(getDataObject(
-					keyTps,
-					(new BigDecimal(tps.getTPS()))
-							.setScale(4, RoundingMode.DOWN)
-							.toPlainString()));
-
-			// オンラインユーザ数取得、サブスレッドからの実行でも例外は出ない
-			data.add(getDataObject(keyUser, String.valueOf(Bukkit.getOnlinePlayers().size())));
-
-			// メモリ
-			long free = runtime.freeMemory();
-			data.add(getDataObject(keyMemUsed, String.valueOf(runtime.totalMemory() - free)));
-			data.add(getDataObject(keyMemFree, String.valueOf(free)));
-
-			try {
-				zabbixSender.send(data);
-			} catch (IOException e) {
-				e.printStackTrace();
+			SenderResult result = zabbixSender.send(data);
+			if (!result.success() || result.getFailed() != 0) {
+				Bukkit.getLogger().warning(result.toString());
 			}
-		} catch (Exception e2) {
-			e2.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 

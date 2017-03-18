@@ -11,6 +11,6 @@ Interval: 60
 Identifier: "Minecraft"
 
 Zabbix:
-  Server: "zabbix.example.com"
+  Server: "localhost"
   Port: 10051
   Hostname: "MinecraftServer"

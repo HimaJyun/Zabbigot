@@ -30,11 +30,11 @@ public class Zabbigot extends JavaPlugin {
 		// コマンド
 		getCommand("zabbigot").setExecutor(new Command(this));
 
-		if (config.getPeriod() <= 0) { // 0以下なら実行しない
+		if (config.getInterval() <= 0) { // 0以下なら実行しない
 			// 送信開始
 			sender = service.scheduleAtFixedRate(new StatusSender(this),
 					(TpsWatcher.MAX_SAMPLING_SIZE / 20) + 10, // 初回実行を少し遅らせる
-					config.getPeriod(),
+					config.getInterval(),
 					TimeUnit.SECONDS);
 		}
 	}

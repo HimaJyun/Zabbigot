@@ -15,7 +15,7 @@ public class ConfigStruct {
 
 	private String identifier;
 
-	private int period;
+	private int interval;
 
 	private String zabbixServer;
 	private int zabbixPort;
@@ -46,7 +46,7 @@ public class ConfigStruct {
 		conf = plg.getConfig();
 
 		identifier = conf.getString("Identifier");
-		period = conf.getInt("Period");
+		interval = conf.getInt("Interval");
 		zabbixServer = conf.getString("Zabbix.Server");
 		zabbixPort = conf.getInt("Zabbix.Port", 10051);
 		zabbixHostname = conf.getString("Zabbix.Hostname");
@@ -58,8 +58,8 @@ public class ConfigStruct {
 		return identifier;
 	}
 
-	public int getPeriod() {
-		return period;
+	public int getInterval() {
+		return interval;
 	}
 
 	public String getZabbixServer() {

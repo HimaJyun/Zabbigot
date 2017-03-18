@@ -9,7 +9,7 @@ Identifier: "Minecraft"
 # Send interval (Unit: second)
 # Sender stops when set to 0.
 # Please set it to 0 if you want to stop by maintenance etc.
-Period: 60
+Interval: 60
 
 Zabbix:
   Server: "zabbix.example.com"

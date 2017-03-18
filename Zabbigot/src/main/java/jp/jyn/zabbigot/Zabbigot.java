@@ -28,7 +28,7 @@ public class Zabbigot extends JavaPlugin {
 		watcher = new TpsWatcher(this);
 
 		// コマンド
-		getCommand("zabbigot").setExecutor(new Command(this));
+		getCommand("zabbigot").setExecutor(new Executor(this));
 
 		if (config.getInterval() <= 0) { // 0以下なら実行しない
 			// 送信開始

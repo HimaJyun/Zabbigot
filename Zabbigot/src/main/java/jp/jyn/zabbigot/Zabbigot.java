@@ -32,7 +32,7 @@ public class Zabbigot extends JavaPlugin {
 
 		// 送信開始
 		sender = service.scheduleAtFixedRate(new StatusSender(this),
-				(TpsWatcher.MAX_SAMPLING_SIZE / 20) + 1, // 少し遅らせる
+				(TpsWatcher.MAX_SAMPLING_SIZE / 20) + 10, // 初回実行を少し遅らせる
 				config.getPeriod(),
 				TimeUnit.SECONDS);
 	}

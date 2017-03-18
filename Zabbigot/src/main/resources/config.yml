@@ -1,3 +1,7 @@
+# It is used when you want to stop temporarily by maintenance etc.
+# If it is false, it will not send.
+Enable: true
+
 # Use to monitor multiple servers.
 # Sends the value specified here as an argument.
 Identifier: "Minecraft"

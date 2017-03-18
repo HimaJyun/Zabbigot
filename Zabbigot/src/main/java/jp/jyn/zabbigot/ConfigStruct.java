@@ -17,6 +17,8 @@ public class ConfigStruct {
 
 	private int period;
 
+	private boolean enable;
+
 	private String zabbixServer;
 	private int zabbixPort;
 	private String zabbixHostname;
@@ -45,6 +47,8 @@ public class ConfigStruct {
 		// 設定を取得
 		conf = plg.getConfig();
 
+		enable = conf.getBoolean("Enable", true);
+
 		identifier = conf.getString("Identifier");
 		period = conf.getInt("Period");
 		zabbixServer = conf.getString("Zabbix.Server");
@@ -72,6 +76,10 @@ public class ConfigStruct {
 
 	public String getZabbixHostname() {
 		return zabbixHostname;
+	}
+
+	public boolean isEnable() {
+		return enable;
 	}
 
 }

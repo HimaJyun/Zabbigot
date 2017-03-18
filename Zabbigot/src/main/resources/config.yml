@@ -6,8 +6,8 @@ Identifier: "Minecraft"
 # Identifier: "Minecraft" -> "minecraft.tps[Minecraft]"
 # Identifier: "Zabbigot" -> "minecraft.tps[Zabbigot]"
 
-# 300000 ms = 5min 
-Period: 300000
+# 300 s = 5min 
+Period: 300
 
 Zabbix:
   Server: "zabbix.example.com"

@@ -3,3 +3,13 @@ name: "${project.artifactId}"
 version: "${project.version}"
 website: "https://jyn.jp/"
 author: '@HimaJyun'
+
+commands:
+  zabbigot:
+    description: "Show status."
+
+permissions:
+  zabbigot.show:
+    default: op
+  zabbigot.reload:
+    default: op

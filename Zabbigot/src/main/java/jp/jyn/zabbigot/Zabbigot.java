@@ -5,7 +5,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class Zabbigot extends JavaPlugin {
@@ -27,23 +26,26 @@ public class Zabbigot extends JavaPlugin {
 
 		// TPSの記録を開始
 		watcher = new TpsWatcher(this);
+
+		// コマンド
+		getCommand("zabbigot").setExecutor(new Command(this));
+
 		// 送信開始
 		sender = service.scheduleAtFixedRate(new StatusSender(this), config.getPeriod(), config.getPeriod(), TimeUnit.SECONDS);
 	}
 
 	@Override
 	public void onDisable() {
-		// イベント無効化
-		HandlerList.unregisterAll(this);
-
-		// TPS記録を止める
-		watcher.cancel();
-
 		// 送信を止める
 		if (sender != null) {
 			sender.cancel(false);
 		}
-		service.shutdown();
+
+		// コマンド
+		getCommand("zabbigot").setExecutor(this);
+
+		// TPS記録を止める
+		watcher.cancel();
 	}
 
 	public ConfigStruct getConfigStruct() {

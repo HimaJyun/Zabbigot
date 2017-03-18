@@ -13,7 +13,7 @@ public class Zabbigot extends JavaPlugin {
 
 	private TpsWatcher watcher;
 	private ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
-	private ScheduledFuture<?> sender;
+	private ScheduledFuture<?> sender = null;
 
 	@Override
 	public void onEnable() {
@@ -30,11 +30,13 @@ public class Zabbigot extends JavaPlugin {
 		// コマンド
 		getCommand("zabbigot").setExecutor(new Command(this));
 
-		// 送信開始
-		sender = service.scheduleAtFixedRate(new StatusSender(this),
-				(TpsWatcher.MAX_SAMPLING_SIZE / 20) + 10, // 初回実行を少し遅らせる
-				config.getPeriod(),
-				TimeUnit.SECONDS);
+		if (config.getPeriod() <= 0) { // 0以下なら実行しない
+			// 送信開始
+			sender = service.scheduleAtFixedRate(new StatusSender(this),
+					(TpsWatcher.MAX_SAMPLING_SIZE / 20) + 10, // 初回実行を少し遅らせる
+					config.getPeriod(),
+					TimeUnit.SECONDS);
+		}
 	}
 
 	@Override

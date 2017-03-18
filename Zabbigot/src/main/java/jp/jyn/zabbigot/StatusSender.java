@@ -42,10 +42,6 @@ public class StatusSender implements Runnable {
 
 	@Override
 	public void run() {
-		if (!config.isEnable()) {
-			return;
-		}
-
 		List<DataObject> data = new ArrayList<>();
 		// Zabbixが小数点以下4桁までなので揃える
 		data.add(getDataObject(

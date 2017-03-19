@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>jp.jyn</groupId>
 	<artifactId>Zabbigot</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0</version>
 	<description>Spigot plugin for Zabbix monitoring.</description>
 
 	<properties>

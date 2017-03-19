@@ -10,6 +10,7 @@ import org.bukkit.command.CommandSender;
 
 import jp.jyn.zabbigot.Zabbigot;
 import jp.jyn.zabbigot.command.sub.Reload;
+import jp.jyn.zabbigot.command.sub.Send;
 import jp.jyn.zabbigot.command.sub.Show;
 
 public class Executor implements CommandExecutor {
@@ -18,6 +19,7 @@ public class Executor implements CommandExecutor {
 	private final static String NO_ARGS = "show";
 
 	public Executor(Zabbigot zabbigot) {
+		commands.put("send", new Send(zabbigot));
 		commands.put("reload", new Reload(zabbigot));
 
 		commands.put(NO_ARGS, new Show(zabbigot));

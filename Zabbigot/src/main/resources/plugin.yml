@@ -11,5 +11,7 @@ commands:
 permissions:
   zabbigot.show:
     default: op
+  zabbigot.send:
+    default: op
   zabbigot.reload:
     default: op

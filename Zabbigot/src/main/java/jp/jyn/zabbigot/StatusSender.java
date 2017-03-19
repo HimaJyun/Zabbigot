@@ -42,6 +42,17 @@ public class StatusSender implements Runnable {
 
 	@Override
 	public void run() {
+		try {
+			SenderResult result = send(getData());
+			if (!result.success() || result.getFailed() != 0) {
+				Bukkit.getLogger().warning(result.toString());
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public List<DataObject> getData() {
 		List<DataObject> data = new ArrayList<>();
 		// Zabbixが小数点以下4桁までなので揃える
 		data.add(getDataObject(
@@ -58,14 +69,11 @@ public class StatusSender implements Runnable {
 		data.add(getDataObject(keyMemUsed, String.valueOf(runtime.totalMemory() - free)));
 		data.add(getDataObject(keyMemFree, String.valueOf(free)));
 
-		try {
-			SenderResult result = zabbixSender.send(data);
-			if (!result.success() || result.getFailed() != 0) {
-				Bukkit.getLogger().warning(result.toString());
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		return data;
+	}
+
+	public SenderResult send(List<DataObject> data) throws IOException {
+		return zabbixSender.send(data);
 	}
 
 	private DataObject getDataObject(String key, String value) {

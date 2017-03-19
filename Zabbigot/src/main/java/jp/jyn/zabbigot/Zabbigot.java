@@ -14,8 +14,9 @@ public class Zabbigot extends JavaPlugin {
 	private ConfigStruct config;
 
 	private TpsWatcher watcher;
+	private StatusSender statusSender;
 	private ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
-	private ScheduledFuture<?> sender = null;
+	private ScheduledFuture<?> future = null;
 
 	@Override
 	public void onEnable() {
@@ -29,27 +30,28 @@ public class Zabbigot extends JavaPlugin {
 		// TPSの記録を開始
 		watcher = new TpsWatcher(this);
 
-		// コマンド
-		getCommand("zabbigot").setExecutor(new Executor(this));
-
+		statusSender = new StatusSender(this);
 		if (config.getInterval() <= 0) { // 0以下なら実行しない
 			// 送信開始
-			sender = service.scheduleAtFixedRate(new StatusSender(this),
+			future = service.scheduleAtFixedRate(statusSender,
 					(TpsWatcher.MAX_SAMPLING_SIZE / 20) + 10, // 初回実行を少し遅らせる
 					config.getInterval(),
 					TimeUnit.SECONDS);
 		}
+
+		// コマンド
+		getCommand("zabbigot").setExecutor(new Executor(this));
 	}
 
 	@Override
 	public void onDisable() {
-		// 送信を止める
-		if (sender != null) {
-			sender.cancel(false);
-		}
-
 		// コマンド
 		getCommand("zabbigot").setExecutor(this);
+
+		// 送信を止める
+		if (future != null) {
+			future.cancel(false);
+		}
 
 		// TPS記録を止める
 		watcher.cancel();
@@ -61,5 +63,9 @@ public class Zabbigot extends JavaPlugin {
 
 	public TpsWatcher getTpsWatcher() {
 		return watcher;
+	}
+
+	public StatusSender getStatusSender() {
+		return statusSender;
 	}
 }

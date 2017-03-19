@@ -4,7 +4,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 public abstract class SubBase {
-	private final static String dontHavePermission = ChatColor.RED + "You don't have permission!!";
+	private final static String dontHavePermission = "[Zabbigot] " + ChatColor.RED + "You don't have permission!!";
 
 	private final String permission;
 

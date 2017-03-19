@@ -19,7 +19,7 @@ public class Reload extends SubBase {
 	protected void exec(CommandSender sender) {
 		zabbigot.onDisable();
 		zabbigot.onEnable();
-		sender.sendMessage(ChatColor.GREEN + "Zabbigot has been reloaded.");
+		sender.sendMessage("[Zabbigot] " + ChatColor.GREEN + "Zabbigot has been reloaded.");
 	}
 
 }

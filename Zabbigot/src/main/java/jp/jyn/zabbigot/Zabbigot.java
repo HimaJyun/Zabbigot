@@ -31,7 +31,7 @@ public class Zabbigot extends JavaPlugin {
 		watcher = new TpsWatcher(this);
 
 		statusSender = new StatusSender(this);
-		if (config.getInterval() <= 0) { // 0以下なら実行しない
+		if (config.getInterval() > 0) { // 1以上の時だけ実行する
 			// 送信開始
 			future = service.scheduleAtFixedRate(statusSender,
 					(TpsWatcher.MAX_SAMPLING_SIZE / 20) + 10, // 初回実行を少し遅らせる

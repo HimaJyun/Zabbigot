@@ -1,6 +1,6 @@
 # Zabbigot
-Bukkit plugin for Zabbix monitoring.  
-[このページの日本語版](https://github.com/HimaJyun/Zabbigot/blob/master/README_ja.md)
+Bukkit plugin for Zabbix monitoring.([このページの日本語版](https://github.com/HimaJyun/Zabbigot/blob/master/README_ja.md))  
+[![Build Status](https://travis-ci.org/HimaJyun/Zabbigot.svg?branch=master)](https://travis-ci.org/HimaJyun/Zabbigot)
 
 ## Installation
 1. [Download this plugin.](https://github.com/HimaJyun/Zabbigot/releases/latest "Get Zabbigot")

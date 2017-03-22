@@ -1,5 +1,6 @@
 # Zabbigot
-ZabbixでBukkitを監視するためのプラグイン
+ZabbixでBukkitを監視するためのプラグイン  
+[![Build Status](https://travis-ci.org/HimaJyun/Zabbigot.svg?branch=master)](https://travis-ci.org/HimaJyun/Zabbigot)
 
 ## インストール
 1. [プラグインをダウンロードする](https://github.com/HimaJyun/Zabbigot/releases/latest "Get Zabbigot")

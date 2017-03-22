@@ -18,6 +18,7 @@ ZabbixでBukkitを監視するためのプラグイン
 |minecraft.tps        |サーバのTPS       |数値 (浮動小数)|
 |minecraft.memory.free|空きメモリ        |数値 (整数)    |
 |minecraft.memory.used|使用済みメモリ    |数値 (整数)    |
+
 実際には「minecraft.tps[Minecraft]」のように識別子を設定します。  
 識別子はconfig.ymlから設定できます。(デフォルト: Minecraft)
 

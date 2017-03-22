@@ -19,6 +19,7 @@ type is "Zabbix trapper"
 |minecraft.tps        |Server TPS  |Numeric (float)   |
 |minecraft.memory.free|Free memory |Numeric (unsigned)|
 |minecraft.memory.used|Used memory |Numeric (unsigned)|
+
 Actually specify an identifier like "minecraft.tps[Minecraft]".  
 Identifiers can be changed from config.yml. (Default: Minecraft)
 

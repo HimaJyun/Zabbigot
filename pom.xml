@@ -3,20 +3,49 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>jp.jyn</groupId>
     <artifactId>Zabbigot</artifactId>
-    <version>1.1</version>
+    <version>1.2.0</version>
+    <url>https://github.com/HimaJyun/Zabbigot</url>
     <description>Spigot plugin for Zabbix monitoring.</description>
-
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <java.version>1.7</java.version>
+        <java.version>1.8</java.version>
+        <spigot.version>1.13.2-R0.1-SNAPSHOT</spigot.version>
     </properties>
+
+    <developers>
+        <developer>
+            <id>HimaJyun</id>
+            <url>https://jyn.jp/</url>
+        </developer>
+    </developers>
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+    <scm>
+        <url>http://github.com/HimaJyun/Zabbigot</url>
+        <connection>scm:git:https://github.com/HimaJyun/Zabbigot.git</connection>
+    </scm>
+    <issueManagement>
+        <system>GitHub</system>
+        <url>https://github.com/HimaJyun/Zabbigot/issues</url>
+    </issueManagement>
+
+    <repositories>
+        <repository>
+            <id>spigot-repo</id>
+            <url>https://hub.spigotmc.org/nexus/content/groups/public/</url>
+        </repository>
+    </repositories>
 
     <dependencies>
         <!-- Spigot API -->
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.11.2-R0.1-SNAPSHOT</version>
+            <version>${spigot.version}</version>
         </dependency>
         <!-- ZabbixSender https://github.com/hengyunabc/zabbix-sender -->
         <dependency>
@@ -25,13 +54,6 @@
             <version>0.0.4</version>
         </dependency>
     </dependencies>
-
-    <repositories>
-        <repository>
-            <id>spigot-repo</id>
-            <url>https://hub.spigotmc.org/nexus/content/groups/public/</url>
-        </repository>
-    </repositories>
 
     <build>
         <plugins>

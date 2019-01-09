@@ -1,8 +1,10 @@
 main: "jp.jyn.zabbigot.Zabbigot"
 name: "Zabbigot"
 version: "${project.version}"
-website: "https://github.com/HimaJyun/Zabbigot"
-author: '@HimaJyun'
+website: "${project.url}"
+description: "${project.description}"
+author: "HimaJyun( https://jyn.jp/ )"
+api-version: 1.13
 
 commands:
     zabbigot:

@@ -1,11 +1,10 @@
 package jp.jyn.zabbigot;
 
-import io.github.hengyunabc.zabbix.sender.DataObject;
-import io.github.hengyunabc.zabbix.sender.SenderResult;
-import io.github.hengyunabc.zabbix.sender.ZabbixSender;
+import jp.jyn.zabbigot.sender.Sender;
+import jp.jyn.zabbigot.sender.Status;
+import jp.jyn.zabbigot.sender.imple.ZabbixSender;
 import org.bukkit.Bukkit;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
@@ -24,7 +23,7 @@ public class StatusSender implements Runnable {
     private final String keyMemFree;
 
     private final Runtime runtime = Runtime.getRuntime();
-    private final ZabbixSender zabbixSender;
+    private final Sender sender;
 
     public StatusSender(Zabbigot zabbigot) {
         this.config = zabbigot.getConfigStruct();
@@ -36,51 +35,36 @@ public class StatusSender implements Runnable {
         keyMemUsed = "minecraft.memory.used[" + config.getIdentifier() + "]";
         keyMemFree = "minecraft.memory.free[" + config.getIdentifier() + "]";
 
-        zabbixSender = new ZabbixSender(config.getZabbixServer(), config.getZabbixPort());
+        sender = new ZabbixSender(config.getZabbixServer(), config.getZabbixPort());
     }
 
     @Override
     public void run() {
-        try {
-            SenderResult result = send(getData());
-            if (!result.success() || result.getFailed() != 0) {
-                Bukkit.getLogger().warning(result.toString());
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        sender.send(getData());
     }
 
-    public List<DataObject> getData() {
-        List<DataObject> data = new ArrayList<>();
+    public String send(List<Status> data) {
+        return sender.send(data);
+    }
+
+    public List<Status> getData() {
+        List<Status> data = new ArrayList<>();
         // Zabbixが小数点以下4桁までなので揃える
-        data.add(getDataObject(
+
+        data.add(new Status(hostname,
             keyTps,
             (new BigDecimal(watcher.getTPS()))
                 .setScale(4, RoundingMode.DOWN)
                 .toPlainString()));
 
         // オンラインユーザ数取得、サブスレッドからの実行でも例外は出ない
-        data.add(getDataObject(keyUser, String.valueOf(Bukkit.getOnlinePlayers().size())));
+        data.add(new Status(hostname, keyUser, String.valueOf(Bukkit.getOnlinePlayers().size())));
 
         // メモリ
         long free = runtime.freeMemory();
-        data.add(getDataObject(keyMemUsed, String.valueOf(runtime.totalMemory() - free)));
-        data.add(getDataObject(keyMemFree, String.valueOf(free)));
+        data.add(new Status(hostname, keyMemUsed, String.valueOf(runtime.totalMemory() - free)));
+        data.add(new Status(hostname, keyMemFree, String.valueOf(free)));
 
         return data;
     }
-
-    public SenderResult send(List<DataObject> data) throws IOException {
-        return zabbixSender.send(data);
-    }
-
-    private DataObject getDataObject(String key, String value) {
-        return DataObject.builder()
-            .host(hostname)
-            .key(key)
-            .value(value)
-            .build();
-    }
-
 }

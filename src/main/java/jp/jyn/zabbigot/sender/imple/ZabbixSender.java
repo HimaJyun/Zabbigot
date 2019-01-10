@@ -1,6 +1,6 @@
 package jp.jyn.zabbigot.sender.imple;
 
-import jp.jyn.zabbigot.sender.Sender;
+import jp.jyn.zabbigot.sender.StatusSender;
 import jp.jyn.zabbigot.sender.Status;
 
 import java.io.IOException;
@@ -11,7 +11,7 @@ import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 
-public class ZabbixSender implements Sender {
+public class ZabbixSender implements StatusSender {
     private final static byte[] HEADER = {'Z', 'B', 'X', 'D', '\1'};
     private final static int BIT_LENGTH = 8;
     private final static int BYTE64_LENGTH = 64 / BIT_LENGTH;

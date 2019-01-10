@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.Collection;
 
 @FunctionalInterface
-public interface Sender {
+public interface StatusSender {
     String send(Collection<Status> data);
 
     default String send(Status... data) {

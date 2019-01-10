@@ -1,24 +1,29 @@
 package jp.jyn.zabbigot.command.sub;
 
-import jp.jyn.zabbigot.Zabbigot;
-import jp.jyn.zabbigot.command.SubBase;
-import org.bukkit.ChatColor;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.event.server.PluginDisableEvent;
+import org.bukkit.event.server.PluginEnableEvent;
+import org.bukkit.plugin.Plugin;
 
-public class Reload extends SubBase {
+public class Reload implements CommandExecutor {
 
-    private final Zabbigot zabbigot;
+    private final Plugin plugin;
 
-    public Reload(Zabbigot zabbigot) {
-        super("zabbigot.reload");
-        this.zabbigot = zabbigot;
+    public Reload(Plugin plugin) {
+        this.plugin = plugin;
     }
 
     @Override
-    protected void exec(CommandSender sender) {
-        zabbigot.onDisable();
-        zabbigot.onEnable();
-        sender.sendMessage("[Zabbigot] " + ChatColor.GREEN + "Zabbigot has been reloaded.");
-    }
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        // reload
+        plugin.getServer().getPluginManager().callEvent(new PluginEnableEvent(plugin));
+        plugin.onDisable();
+        plugin.onEnable();
+        plugin.getServer().getPluginManager().callEvent(new PluginDisableEvent(plugin));
 
+        sender.sendMessage("[Zabbigot] Config has been reloaded.");
+        return true;
+    }
 }

@@ -1,31 +1,26 @@
 package jp.jyn.zabbigot.command.sub;
 
-import jp.jyn.zabbigot.StatusSender;
 import jp.jyn.zabbigot.Zabbigot;
-import jp.jyn.zabbigot.command.SubBase;
 import jp.jyn.zabbigot.sender.Status;
 import org.bukkit.ChatColor;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
-public class Send extends SubBase {
-
-    private final StatusSender statusSender;
-    ExecutorService exector = Executors.newSingleThreadExecutor();
+public class Send implements CommandExecutor {
+    private final Zabbigot zabbigot;
 
     public Send(Zabbigot zabbigot) {
-        super("zabbigot.send");
-        this.statusSender = zabbigot.getStatusSender();
+        this.zabbigot = zabbigot;
     }
 
     @Override
-    protected void exec(final CommandSender sender) {
-        exector.submit(() -> {
-            List<Status> data = statusSender.getData();
-            String result = statusSender.send(data);
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        zabbigot.getServer().getScheduler().runTaskAsynchronously(zabbigot, () -> {
+            List<Status> data = zabbigot.getData();
+            String result = zabbigot.send(data);
 
             sender.sendMessage(ChatColor.GREEN + "========" + ChatColor.RESET + " Zabbigot " + ChatColor.GREEN + "========");
             sender.sendMessage("Send:");
@@ -37,6 +32,6 @@ public class Send extends SubBase {
             sender.sendMessage("Result:");
             sender.sendMessage(result);
         });
+        return true;
     }
-
 }

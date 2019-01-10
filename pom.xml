@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>jp.jyn</groupId>
     <artifactId>Zabbigot</artifactId>
-    <version>1.2.0</version>
+    <version>2.0.0</version>
     <url>https://github.com/HimaJyun/Zabbigot</url>
     <description>Spigot plugin for Zabbix monitoring.</description>
     <properties>
@@ -49,6 +49,7 @@
     </dependencies>
 
     <build>
+        <defaultGoal>clean package</defaultGoal>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

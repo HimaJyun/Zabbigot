@@ -1,25 +1,25 @@
 package jp.jyn.zabbigot.command.sub;
 
 import jp.jyn.zabbigot.TpsWatcher;
-import jp.jyn.zabbigot.Zabbigot;
-import jp.jyn.zabbigot.command.SubBase;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Server;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
-public class Show extends SubBase {
+public class Show implements CommandExecutor {
 
     private final StringBuilder builder = new StringBuilder();
     private final TpsWatcher watcher;
 
-    public Show(Zabbigot zabbigot) {
-        super("zabbigot.show");
-        this.watcher = zabbigot.getTpsWatcher();
+    public Show(TpsWatcher watcher) {
+        this.watcher = watcher;
     }
 
+
     @Override
-    protected void exec(CommandSender sender) {
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         /*
          * ======== Zabbigot (Player: 0/20) ========
          * TPS: [####################] 20.00 (100.0%)
@@ -36,6 +36,7 @@ public class Show extends SubBase {
 
         sender.sendMessage(formatTps(watcher.getTPS()));
         sender.sendMessage(formatMem());
+        return true;
     }
 
     private String formatTps(double tps) {

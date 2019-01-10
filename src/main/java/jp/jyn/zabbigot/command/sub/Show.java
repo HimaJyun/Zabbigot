@@ -1,20 +1,27 @@
 package jp.jyn.zabbigot.command.sub;
 
+import jp.jyn.zabbigot.EventCounter;
 import jp.jyn.zabbigot.TpsWatcher;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 public class Show implements CommandExecutor {
+    private final static BigDecimal DECIMAL_20 = BigDecimal.valueOf(20);
+    private final static BigDecimal DECIMAL_100 = BigDecimal.valueOf(100);
+    private final static BigDecimal DECIMAL_MB = BigDecimal.valueOf(1024 * 1024);
 
-    private final StringBuilder builder = new StringBuilder();
     private final TpsWatcher watcher;
+    private final EventCounter counter;
 
-    public Show(TpsWatcher watcher) {
+    public Show(TpsWatcher watcher, EventCounter counter) {
         this.watcher = watcher;
+        this.counter = counter;
     }
 
 
@@ -24,89 +31,88 @@ public class Show implements CommandExecutor {
          * ======== Zabbigot (Player: 0/20) ========
          * TPS: [####################] 20.00 (100.0%)
          * MEM: [###################_] 7832.4MB/8192.0MB (95.6%)
+         * CUR: [###############_____] 585 (75.4%)
          */
 
-        Server server = Bukkit.getServer();
-        sender.sendMessage(ChatColor.GREEN + "========" + ChatColor.RESET
-            + " Zabbigot (Player: "
-            + server.getOnlinePlayers().size()
-            + "/"
-            + server.getMaxPlayers()
-            + ") " + ChatColor.GREEN + "========");
+        sender.sendMessage(String.format(
+            "%s========%s Zabbigot (Player: %d/%d) %s========",
+            ChatColor.GREEN,
+            ChatColor.RESET,
+            Bukkit.getOnlinePlayers().size(),
+            Bukkit.getMaxPlayers(),
+            ChatColor.GREEN
+        ));
 
-        sender.sendMessage(formatTps(watcher.getTPS()));
-        sender.sendMessage(formatMem());
+        sender.sendMessage(tickPerSecond());
+        sender.sendMessage(memoryUsage());
+        sender.sendMessage(chunkUnloadRatio());
         return true;
     }
 
-    private String formatTps(double tps) {
-        builder.setLength(0);
+    private String tickPerSecond() {
+        BigDecimal tps = BigDecimal.valueOf(watcher.getTPS());
 
-        builder.append("TPS: [");
-        gaugeFormat(tps);
-        builder.append("] ");
-
-        builder.append(String.format("%.2f", tps));
-        builder.append(" (");
-        builder.append(String.format("%.1f", (tps / 20) * 100.0D));
-        builder.append("%)");
-
-        return builder.toString();
+        return String.format(
+            "TPS: [%s] %s (%s%%)",
+            gauge(tps.intValue()),
+            tps.setScale(2, RoundingMode.DOWN).toPlainString(),
+            tps.divide(DECIMAL_20, 3, RoundingMode.DOWN).multiply(DECIMAL_100).setScale(1, RoundingMode.DOWN).toPlainString()
+        );
     }
 
-    private String formatMem() {
-        builder.setLength(0);
-        Runtime runtime = Runtime.getRuntime();
+    private String memoryUsage() {
+        BigDecimal free = BigDecimal.valueOf(Runtime.getRuntime().freeMemory());
+        BigDecimal total = BigDecimal.valueOf(Runtime.getRuntime().totalMemory());
+        BigDecimal ratio = free.divide(total, 3, RoundingMode.DOWN);
 
-        long total = runtime.totalMemory();
-        long free = runtime.freeMemory();
-
-        builder.append("MEM: [");
-        gaugeFormat((20.0 / total) * free);
-        builder.append("] ");
-
-        // 1048576 = 1024 * 1024;
-        builder.append(String.format("%.1f", free / 1048576.0));
-        builder.append("MB/");
-        builder.append(String.format("%.1f", total / 1048576.0));
-        builder.append("MB (");
-        builder.append(String.format("%.1f", ((double) free / total) * 100.0D));
-        builder.append("%)");
-
-        return builder.toString();
+        return String.format(
+            "MEM: [%s] %sMB/%sMB (%s%%)",
+            gauge(ratio.multiply(DECIMAL_20).intValue()),
+            free.divide(DECIMAL_MB, 1, RoundingMode.DOWN).toPlainString(),
+            total.divide(DECIMAL_MB, 1, RoundingMode.DOWN).toPlainString(),
+            ratio.multiply(DECIMAL_100).setScale(1, RoundingMode.DOWN).toPlainString()
+        );
     }
 
-    private void gaugeFormat(double value) {
-        boolean reseted = false;
+    private String chunkUnloadRatio() {
+        int load = counter.chunkLoad.get();
+        int unload = counter.chunkUnload.get();
+        BigDecimal ratio = BigDecimal.valueOf(unload).divide(BigDecimal.valueOf(load), 3, RoundingMode.DOWN);
 
+        return String.format(
+            "CUR: [%s] %d (%s%%)",
+            gauge(ratio.multiply(DECIMAL_20).intValue()),
+            load - unload,
+            ratio.multiply(DECIMAL_100).setScale(1, RoundingMode.DOWN).toPlainString()
+        );
+    }
+
+    private String gauge(int length) {
+        final StringBuilder builder = new StringBuilder();
         builder.append(ChatColor.RED);
 
-        for (int i = 0; i < 20; ++i) {
-            if (!reseted) {
-                switch (i) {
-                    case 10: // 10回目
-                        builder.append(ChatColor.YELLOW);
-                        break;
-                    case 17: // 17回目
-                        builder.append(ChatColor.GREEN);
-                        break;
-                    default:
-                        break;
+        boolean reset = false;
+        for (int i = 0; i < 20; i++) {
+            if (!reset) {
+                if (i == 10) {
+                    builder.append(ChatColor.YELLOW);
+                } else if (i == 17) {
+                    builder.append(ChatColor.GREEN);
                 }
             }
 
-            if (value < 1) { // 1以下
-                if (!reseted) {
+            if (length <= i) {
+                if (!reset) {
                     builder.append(ChatColor.RESET);
-                    reseted = true;
+                    reset = true;
                 }
                 builder.append('_');
             } else {
                 builder.append('#');
             }
-            --value;
         }
 
         builder.append(ChatColor.RESET);
+        return builder.toString();
     }
 }

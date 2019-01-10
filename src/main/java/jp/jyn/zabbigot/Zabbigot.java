@@ -4,6 +4,7 @@ import jp.jyn.zabbigot.command.SubExecutor;
 import jp.jyn.zabbigot.sender.Status;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
+import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -43,11 +44,20 @@ public class Zabbigot extends JavaPlugin {
         BukkitTask task = getServer().getScheduler().runTaskTimer(this, watcher, 0, 1);
         destructor.addFirst(task::cancel);
 
+        // start Event count
+        EventCounter event = new EventCounter();
+        getServer().getPluginManager().registerEvents(event, this);
+        destructor.addFirst(() -> HandlerList.unregisterAll(this));
+
         // add Status
         addStatus(Keys.TPS, () -> new BigDecimal(watcher.getTPS()).setScale(4, RoundingMode.DOWN).toPlainString());
         addStatus(Keys.USER, () -> String.valueOf(Bukkit.getOnlinePlayers().size()));
+        addStatus(Keys.PING, event.ping::toString);
         addStatus(Keys.MEMORY_USED, () -> String.valueOf(runtime.totalMemory() - free.get()));
-        addStatus(Keys.MEMORY_FREE, () -> free.toString());
+        addStatus(Keys.MEMORY_FREE, free::toString);
+        addStatus(Keys.CHUNK_LOAD, event.chunkLoad::toString);
+        addStatus(Keys.CHUNK_UNLOAD, event.chunkUnload::toString);
+        addStatus(Keys.CHUNK_GENERATE, event.chunkGenerate::toString);
 
         // status sender
         if (config.interval > 0) {
@@ -61,7 +71,7 @@ public class Zabbigot extends JavaPlugin {
         }
 
         // command
-        SubExecutor executor = new SubExecutor(this, watcher);
+        SubExecutor executor = new SubExecutor(this, watcher, event);
         PluginCommand command = getCommand("zabbigot");
         command.setExecutor(executor);
         command.setTabCompleter(executor);

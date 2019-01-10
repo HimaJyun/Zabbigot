@@ -31,3 +31,18 @@ Please refer to "zabbigot_template.xml" for actual setting.
 |/zabbigot       |zabbigot.show  |Show system status.|OP     |
 |/zabbigot send  |zabbigot.send  |Send status.       |OP     |
 |/zabbigot reload|zabbigot.reload|Reload the config. |OP     |
+
+## Command output
+"/zabbigot show" will output the following message.
+
+```
+======== Zabbigot (Player: {online player}/{max player}) ========
+TPS: [####################] {tps} ({tps}%)
+MEM: [###################_] {free}MB/{total}MB ({free}%)
+CUR: [###############_____] {loaded chunks} ({unload ratio}%)
+```
+
+TPS may exceed 20, but this is normal behavior to get back the delay.
+
+CUR(Chunk Unload Ratio) represents the chunk loading/unloading ratio.  
+{loaded chunks} is the number of chunks currently loaded.

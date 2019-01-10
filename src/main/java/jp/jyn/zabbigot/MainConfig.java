@@ -7,7 +7,7 @@ import jp.jyn.zabbigot.sender.imple.ZabbixSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.Plugin;
 
-import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.Locale;
 import java.util.Set;
@@ -40,12 +40,12 @@ public class MainConfig {
                 keys = new Keys("minecraft", config.getString("Zabbix.Identifier"));
                 break;
             case "tsv":
-                sender = new TsvSender(Path.of(plugin.getDataFolder().getPath(), "status.tsv"));
+                sender = new TsvSender(Paths.get(plugin.getDataFolder().getPath(), "status.tsv"));
                 hostname = "";
                 keys = Keys.DEFAULT;
                 break;
             case "json":
-                sender = new JsonSender(Path.of(plugin.getDataFolder().getPath(), "status.json"));
+                sender = new JsonSender(Paths.get(plugin.getDataFolder().getPath(), "status.json"));
                 hostname = "";
                 keys = Keys.DEFAULT;
                 break;

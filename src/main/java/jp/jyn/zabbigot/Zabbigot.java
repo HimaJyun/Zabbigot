@@ -24,6 +24,9 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class Zabbigot extends JavaPlugin {
+    // Zabbix keeps decimals only up to 4 digits(double(16,4))
+    private final static int ZABBIX_MAX_SCALE = 4;
+
     private final Deque<Runnable> destructor = new ArrayDeque<>();
     private final ScheduledExecutorService pool = Executors.newSingleThreadScheduledExecutor();
     private final List<Supplier<Status>> suppliers = new ArrayList<>();
@@ -35,7 +38,6 @@ public class Zabbigot extends JavaPlugin {
     @Override
     public void onEnable() {
         destructor.clear();
-        suppliers.clear();
 
         config = new MainConfig(this);
 
@@ -50,14 +52,17 @@ public class Zabbigot extends JavaPlugin {
         destructor.addFirst(() -> HandlerList.unregisterAll(this));
 
         // add Status
-        addStatus(Keys.TPS, () -> new BigDecimal(watcher.getTPS()).setScale(4, RoundingMode.DOWN).toPlainString());
+        addStatus(Keys.TPS, () -> BigDecimal.valueOf(watcher.getTPS()).setScale(ZABBIX_MAX_SCALE, RoundingMode.DOWN).toPlainString());
         addStatus(Keys.USER, () -> String.valueOf(Bukkit.getOnlinePlayers().size()));
         addStatus(Keys.PING, event.ping::toString);
         addStatus(Keys.MEMORY_USED, () -> String.valueOf(runtime.totalMemory() - free.get()));
         addStatus(Keys.MEMORY_FREE, free::toString);
         addStatus(Keys.CHUNK_LOAD, event.chunkLoad::toString);
         addStatus(Keys.CHUNK_UNLOAD, event.chunkUnload::toString);
+        addStatus(Keys.CHUNK_LOADED, () -> String.valueOf(event.chunkLoad.get() - event.chunkUnload.get()));
         addStatus(Keys.CHUNK_GENERATE, event.chunkGenerate::toString);
+        addStatus(Keys.CHUNK_RATIO, () -> BigDecimal.valueOf(event.chunkUnload.get()).divide(BigDecimal.valueOf(event.chunkLoad.get()), ZABBIX_MAX_SCALE + 2, RoundingMode.DOWN).scaleByPowerOfTen(2).toPlainString());
+        destructor.addFirst(suppliers::clear);
 
         // status sender
         if (config.interval > 0) {

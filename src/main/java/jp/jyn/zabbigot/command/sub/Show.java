@@ -13,7 +13,6 @@ import java.math.RoundingMode;
 
 public class Show implements CommandExecutor {
     private final static BigDecimal DECIMAL_20 = BigDecimal.valueOf(20);
-    private final static BigDecimal DECIMAL_100 = BigDecimal.valueOf(100);
     private final static BigDecimal DECIMAL_MB = BigDecimal.valueOf(1024 * 1024);
 
     private final TpsWatcher watcher;
@@ -23,8 +22,7 @@ public class Show implements CommandExecutor {
         this.watcher = watcher;
         this.counter = counter;
     }
-
-
+    
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         /*
@@ -56,7 +54,7 @@ public class Show implements CommandExecutor {
             "TPS: [%s] %s (%s%%)",
             gauge(tps.intValue()),
             tps.setScale(2, RoundingMode.DOWN).toPlainString(),
-            tps.divide(DECIMAL_20, 3, RoundingMode.DOWN).multiply(DECIMAL_100).setScale(1, RoundingMode.DOWN).toPlainString()
+            tps.divide(DECIMAL_20, 3, RoundingMode.DOWN).scaleByPowerOfTen(2).setScale(1, RoundingMode.DOWN).toPlainString()
         );
     }
 
@@ -70,7 +68,7 @@ public class Show implements CommandExecutor {
             gauge(ratio.multiply(DECIMAL_20).intValue()),
             free.divide(DECIMAL_MB, 1, RoundingMode.DOWN).toPlainString(),
             total.divide(DECIMAL_MB, 1, RoundingMode.DOWN).toPlainString(),
-            ratio.multiply(DECIMAL_100).setScale(1, RoundingMode.DOWN).toPlainString()
+            ratio.scaleByPowerOfTen(2).setScale(1, RoundingMode.DOWN).toPlainString()
         );
     }
 
@@ -83,7 +81,7 @@ public class Show implements CommandExecutor {
             "CUR: [%s] %d (%s%%)",
             gauge(ratio.multiply(DECIMAL_20).intValue()),
             load - unload,
-            ratio.multiply(DECIMAL_100).setScale(1, RoundingMode.DOWN).toPlainString()
+            ratio.scaleByPowerOfTen(2).setScale(1, RoundingMode.DOWN).toPlainString()
         );
     }
 

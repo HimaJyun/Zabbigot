@@ -9,7 +9,9 @@ public class Keys {
     public final static String MEMORY_FREE = "memory.free";
     public final static String CHUNK_LOAD = "chunk.load";
     public final static String CHUNK_UNLOAD = "chunk.unload";
+    public final static String CHUNK_LOADED = "chunk.loaded";
     public final static String CHUNK_GENERATE = "chunk.generate";
+    public final static String CHUNK_RATIO = "chunk.ratio";
 
     private final String prefix;
     private final String identifier;

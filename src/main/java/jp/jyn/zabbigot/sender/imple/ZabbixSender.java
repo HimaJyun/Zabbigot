@@ -31,7 +31,7 @@ public class ZabbixSender implements StatusSender {
 
     @Override
     public String send(Collection<Status> data) {
-        byte[] body = toBytes(Status.toJson(data).getBytes());
+        byte[] body = toBytes(toJson(data).getBytes());
         try (Socket socket = new Socket()) {
             socket.setSoTimeout(timeout);
             socket.connect(new InetSocketAddress(host, port), timeout);
@@ -41,7 +41,7 @@ public class ZabbixSender implements StatusSender {
                 out.flush();
 
                 byte[] buffer = new byte[512];
-                int read = 0, count = 0;
+                int read, count = 0;
                 while (true) {
                     read = in.read(buffer, count, buffer.length - count);
                     if (read <= 0) {
@@ -81,4 +81,45 @@ public class ZabbixSender implements StatusSender {
         return result;
     }
 
+    private String toJson(Iterable<Status> data) {
+        // https://www.zabbix.org/wiki/Docs/protocols/zabbix_sender/3.4
+        // https://aoishi.hateblo.jp/entry/2017/12/03/014913
+
+        StringBuilder builder = new StringBuilder();
+        builder.append('{');
+        builder.append("\"request\":\"sender data\",");
+        builder.append("\"clock\":").append(System.currentTimeMillis() / 1000).append(',');
+
+        builder.append("\"data\":[");
+        boolean first = true;
+        for (Status datum : data) {
+            if (first) {
+                first = false;
+            } else {
+                builder.append(',');
+            }
+            builder.append('{');
+
+            // clock
+            if (datum.clock != -1) { // -1 for LLD
+                builder.append("\"clock\":");
+                builder.append(datum.clock).append(',');
+            }
+            // host
+            builder.append("\"host\":");
+            Status.jsonStr(datum.host, builder).append(',');
+            // key
+            builder.append("\"key\":\"");
+            Status.jsonStr(datum.key, builder).append(',');
+            // value
+            builder.append("\"value\":\"");
+            Status.jsonStr(datum.value, builder);
+
+            builder.append('}');
+        }
+        builder.append(']');
+
+        builder.append('}');
+        return builder.toString();
+    }
 }

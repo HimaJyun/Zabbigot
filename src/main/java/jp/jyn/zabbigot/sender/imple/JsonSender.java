@@ -27,7 +27,7 @@ public class JsonSender implements StatusSender {
             StandardOpenOption.TRUNCATE_EXISTING
         )) {
 
-            String json = Status.toJson(data);
+            String json = toJson(data);
             writer.write(json);
             writer.newLine();
 
@@ -35,5 +35,24 @@ public class JsonSender implements StatusSender {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private String toJson(Iterable<Status> data) {
+        StringBuilder builder = new StringBuilder();
+        builder.append('{');
+
+        boolean first = true;
+        for (Status datum : data) {
+            if (first) {
+                first = false;
+            } else {
+                builder.append(',');
+            }
+            Status.jsonStr(datum.key, builder).append(':');
+            Status.jsonStr(datum.value, builder);
+        }
+
+        builder.append('}');
+        return builder.toString();
     }
 }

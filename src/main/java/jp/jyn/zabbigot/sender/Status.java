@@ -1,7 +1,6 @@
 package jp.jyn.zabbigot.sender;
 
 import java.time.Instant;
-import java.util.Arrays;
 
 public class Status {
     public final String host;
@@ -27,57 +26,9 @@ public class Status {
         this.clock = clock;
     }
 
-    public static String toJson(Status... data) {
-        return toJson(Arrays.asList(data));
-    }
+    public static StringBuilder jsonStr(String str, StringBuilder builder) {
+        builder.append('"');
 
-    public static String toJson(Iterable<Status> data) {
-        // https://www.zabbix.org/wiki/Docs/protocols/zabbix_sender/3.4
-        // https://aoishi.hateblo.jp/entry/2017/12/03/014913
-
-        StringBuilder builder = new StringBuilder();
-        builder.append('{');
-        builder.append("\"request\":\"sender data\",");
-        builder.append("\"clock\":").append(System.currentTimeMillis() / 1000).append(',');
-
-        builder.append("\"data\":[");
-        boolean first = true;
-        for (Status datum : data) {
-            if (first) {
-                first = false;
-            } else {
-                builder.append(',');
-            }
-            builder.append('{');
-
-            // clock
-            if (datum.clock != -1) { // -1 for LLD
-                builder.append("\"clock\":");
-                builder.append(datum.clock);
-                builder.append(',');
-            }
-            // host
-            builder.append("\"host\":\"");
-            jsonEscape(datum.host, builder);
-            builder.append("\",");
-            // key
-            builder.append("\"key\":\"");
-            jsonEscape(datum.key, builder);
-            builder.append("\",");
-            // value
-            builder.append("\"value\":\"");
-            jsonEscape(datum.value, builder);
-            builder.append('"');
-
-            builder.append('}');
-        }
-        builder.append(']');
-
-        builder.append('}');
-        return builder.toString();
-    }
-
-    private static void jsonEscape(String str, StringBuilder builder) {
         for (char c : str.toCharArray()) {
             switch (c) {
                 case '"':
@@ -109,5 +60,8 @@ public class Status {
                     break;
             }
         }
+
+        builder.append('"');
+        return builder;
     }
 }

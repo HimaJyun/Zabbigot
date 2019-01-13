@@ -57,4 +57,3 @@ TPS may exceed 20, but this is normal behavior to get back the delay.
 CUR(Chunk Unload Ratio) represents the chunk loading/unloading ratio.  
 {loaded chunks} is the number of chunks currently loaded.
 
-## Tips: 

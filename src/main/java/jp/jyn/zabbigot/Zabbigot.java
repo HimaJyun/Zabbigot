@@ -1,45 +1,29 @@
 package jp.jyn.zabbigot;
 
 import jp.jyn.zabbigot.command.SubExecutor;
-import jp.jyn.zabbigot.sender.Status;
-import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Deque;
-import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 public class Zabbigot extends JavaPlugin {
-    // Zabbix keeps decimals only up to 4 digits(double(16,4))
-    private final static int ZABBIX_MAX_SCALE = 4;
-
     private final Deque<Runnable> destructor = new ArrayDeque<>();
     private final ScheduledExecutorService pool = Executors.newSingleThreadScheduledExecutor();
-    private final List<Supplier<Status>> suppliers = new ArrayList<>();
-    private final Runtime runtime = Runtime.getRuntime();
 
-    private MainConfig config;
-    private AtomicLong free = new AtomicLong(runtime.freeMemory());
+    private StatusManager manager;
 
     @Override
     public void onEnable() {
         destructor.clear();
 
-        config = new MainConfig(this);
+        MainConfig config = new MainConfig(this);
 
         // start TPS watcher
         TpsWatcher watcher = new TpsWatcher();
@@ -51,23 +35,18 @@ public class Zabbigot extends JavaPlugin {
         getServer().getPluginManager().registerEvents(event, this);
         destructor.addFirst(() -> HandlerList.unregisterAll(this));
 
-        // add Status
-        addStatus(Keys.TPS, () -> BigDecimal.valueOf(watcher.getTPS()).setScale(ZABBIX_MAX_SCALE, RoundingMode.DOWN).toPlainString());
-        addStatus(Keys.USER, () -> String.valueOf(Bukkit.getOnlinePlayers().size()));
-        addStatus(Keys.PING, event.ping::toString);
-        addStatus(Keys.MEMORY_USED, () -> String.valueOf(runtime.totalMemory() - free.get()));
-        addStatus(Keys.MEMORY_FREE, free::toString);
-        addStatus(Keys.CHUNK_LOAD, event.chunkLoad::toString);
-        addStatus(Keys.CHUNK_UNLOAD, event.chunkUnload::toString);
-        addStatus(Keys.CHUNK_LOADED, () -> String.valueOf(event.chunkLoad.get() - event.chunkUnload.get()));
-        addStatus(Keys.CHUNK_GENERATE, event.chunkGenerate::toString);
-        addStatus(Keys.CHUNK_RATIO, () -> BigDecimal.valueOf(event.chunkUnload.get()).divide(BigDecimal.valueOf(event.chunkLoad.get()), ZABBIX_MAX_SCALE + 2, RoundingMode.DOWN).scaleByPowerOfTen(2).toPlainString());
-        destructor.addFirst(suppliers::clear);
+        // StatusManager
+        manager = new StatusManager.Builder(config.sender)
+            .setHost(config.hostname)
+            .setKeyConverter(config.keyConverter)
+            .addDisabledKeys(config.disable)
+            .addDefaultStatus(watcher, event)
+            .build();
 
         // status sender
         if (config.interval > 0) {
             ScheduledFuture<?> future = pool.scheduleAtFixedRate(
-                this::send,
+                manager::send,
                 config.interval,
                 config.interval,
                 TimeUnit.SECONDS
@@ -91,25 +70,12 @@ public class Zabbigot extends JavaPlugin {
         }
     }
 
-    // TODO: 他のクラスに移動
-    public void addStatus(String key, Supplier<String> value) {
-        String key2 = config.keys.toKey(key);
-        if (!config.disable.contains(key2)) {
-            suppliers.add(() -> new Status(config.hostname, key2, value.get()));
-        }
-    }
-
-    public List<Status> getData() {
-        return suppliers.stream().map(Supplier::get).collect(Collectors.toList());
-    }
-
-    public String send(Collection<Status> data) {
-        free.set(runtime.freeMemory());
-        return config.sender.send(data);
-    }
-
-    private void send() {
-        free.set(runtime.freeMemory());
-        config.sender.send(getData());
+    /**
+     * Get status manager
+     *
+     * @return StatusManager
+     */
+    public StatusManager getManager() {
+        return manager;
     }
 }

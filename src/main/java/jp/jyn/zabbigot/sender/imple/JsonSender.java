@@ -19,7 +19,7 @@ public class JsonSender implements StatusSender {
     }
 
     @Override
-    public String send(Collection<Status> data) {
+    public SendResult send(Collection<Status> data) {
         try (BufferedWriter writer = Files.newBufferedWriter(
             file, StandardCharsets.UTF_8,
             StandardOpenOption.WRITE,
@@ -27,17 +27,18 @@ public class JsonSender implements StatusSender {
             StandardOpenOption.TRUNCATE_EXISTING
         )) {
 
-            String json = toJson(data);
-            writer.write(json);
+            SendResult result = toJson(data);
+            writer.write(result.response);
             writer.newLine();
 
-            return json;
+            return result;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private String toJson(Iterable<Status> data) {
+    private SendResult toJson(Iterable<Status> data) {
+        SendResult result = new SendResult();
         StringBuilder builder = new StringBuilder();
         builder.append('{');
 
@@ -48,11 +49,16 @@ public class JsonSender implements StatusSender {
             } else {
                 builder.append(',');
             }
+
+            String value = datum.value.get();
+
             Status.jsonStr(datum.key, builder).append(':');
-            Status.jsonStr(datum.value, builder);
+            Status.jsonStr(value, builder);
+            result.data.put(datum.key, value);
         }
 
         builder.append('}');
-        return builder.toString();
+        result.response = builder.toString();
+        return result;
     }
 }

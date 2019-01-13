@@ -9,18 +9,17 @@ import org.bukkit.plugin.Plugin;
 
 import java.nio.file.Paths;
 import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.function.UnaryOperator;
 
 public class MainConfig {
     public final int interval;
+    public final List<String> disable;
 
     public final String hostname;
     public final StatusSender sender;
-    public final Keys keys;
-
-    public final Set<String> disable;
+    public final UnaryOperator<String> keyConverter;
 
     public MainConfig(Plugin plugin) {
         plugin.saveDefaultConfig();
@@ -32,34 +31,32 @@ public class MainConfig {
         }
 
         interval = config.getInt("Interval");
+        disable = Collections.unmodifiableList(config.getStringList("Disable"));
 
+        String hostname = "";
+        UnaryOperator<String> keyConverter = s -> s;
         switch (config.getString("Sender").toLowerCase(Locale.ENGLISH)) {
             case "zabbix":
                 sender = new ZabbixSender(config.getString("Zabbix.Server"), config.getInt("Zabbix.Port"));
                 hostname = config.getString("Zabbix.Hostname");
-                keys = new Keys("minecraft", config.getString("Zabbix.Identifier"));
+
+                String tmp = config.getString("Zabbix.Identifier", "");
+                String identifier = tmp.isEmpty() ? "" : "[" + tmp + "]";
+                keyConverter = s -> "minecraft." + s + identifier;
                 break;
             case "tsv":
                 sender = new TsvSender(Paths.get(plugin.getDataFolder().getPath(), "status.tsv"));
-                hostname = "";
-                keys = Keys.DEFAULT;
                 break;
             case "json":
                 sender = new JsonSender(Paths.get(plugin.getDataFolder().getPath(), "status.json"));
-                hostname = "";
-                keys = Keys.DEFAULT;
                 break;
             default:
                 plugin.getLogger().severe("Unsupported Sender Type: " + config.getString("Sender"));
             case "test":
-                sender = ignore -> "error";
-                hostname = "";
-                keys = Keys.DEFAULT;
+                sender = ignore -> new StatusSender.SendResult();
         }
-
-        disable = config.getStringList("Disable").stream()
-            .map(keys::toKey)
-            .collect(Collectors.collectingAndThen(Collectors.toSet(), Collections::unmodifiableSet));
+        this.hostname = hostname;
+        this.keyConverter = keyConverter;
     }
 
     private void version0To1(Plugin plugin, ConfigurationSection config) {

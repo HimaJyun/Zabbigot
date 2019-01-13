@@ -3,9 +3,9 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>jp.jyn</groupId>
     <artifactId>Zabbigot</artifactId>
-    <version>2.0.0</version>
+    <version>1.2.0</version>
     <url>https://github.com/HimaJyun/Zabbigot</url>
-    <description>Spigot plugin for Zabbix monitoring.</description>
+    <description>Bukkit plugin for Zabbix monitoring.</description>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
@@ -39,12 +39,12 @@
             <url>https://hub.spigotmc.org/nexus/content/groups/public/</url>
         </repository>
     </repositories>
-
     <dependencies>
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
             <version>${spigot.version}</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 
@@ -54,20 +54,52 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.5.1</version>
+                <version>3.7.0</version>
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
                 </configuration>
             </plugin>
         </plugins>
-
-        <resources>
-            <resource>
-                <targetPath>.</targetPath>
-                <filtering>true</filtering>
-                <directory>src/main/resources/</directory>
-            </resource>
-        </resources>
     </build>
+
+    <profiles>
+        <profile>
+            <id>lib</id>
+            <distributionManagement>
+                <repository>
+                    <id>internal.repos</id>
+                    <name>internal repo</name>
+                    <url>file://${project.basedir}/mvn-repo</url>
+                </repository>
+            </distributionManagement>
+            <build>
+                <defaultGoal>clean javadoc:jar source:jar deploy</defaultGoal>
+                <resources>
+                    <resource>
+                        <directory>src/main/resources/</directory>
+                        <excludes>
+                            <exclude>*.yml</exclude>
+                        </excludes>
+                    </resource>
+                </resources>
+            </build>
+        </profile>
+        <profile>
+            <id>plugin</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <build>
+                <defaultGoal>clean package</defaultGoal>
+                <resources>
+                    <resource>
+                        <targetPath>.</targetPath>
+                        <filtering>true</filtering>
+                        <directory>src/main/resources/</directory>
+                    </resource>
+                </resources>
+            </build>
+        </profile>
+    </profiles>
 </project>

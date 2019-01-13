@@ -17,18 +17,28 @@ type is "Zabbix trapper"
 |:--------------------|:-----------|:-----------------|
 |minecraft.user       |Online users|Numeric (unsigned)|
 |minecraft.tps        |Server TPS  |Numeric (float)   |
+|minecraft.ping       |Ping count  |Numeric (unsigned)|
 |minecraft.memory.free|Free memory |Numeric (unsigned)|
 |minecraft.memory.used|Used memory |Numeric (unsigned)|
+|minecraft.chunk.load    |Chunk load count       |Numeric (unsigned)|
+|minecraft.chunk.unload  |Chunk unload count     |Numeric (unsigned)|
+|minecraft.chunk.loaded  |Loaded chunk count     |Numeric (unsigned)|
+|minecraft.chunk.generate|Generated chunk count  |Numeric (unsigned)|
+|minecraft.chunk.ratio   |Chunk load/unload ratio|Numeric (float)   |
 
 Actually specify an identifier like "minecraft.tps[Minecraft]".  
 Identifiers can be changed from config.yml. (Default: Minecraft)
 
 Please refer to "zabbigot_template.xml" for actual setting.
 
+### Tips: Other than zabbix
+You can output the status to a file by changing the setting.  
+Please send the value written in the file to your system.
+
 ## Command/Permission
 |Command         |Permission     |Description        |Default|
 |:---------------|:--------------|:------------------|:------|
-|/zabbigot       |zabbigot.show  |Show system status.|OP     |
+|/zabbigot show  |zabbigot.show  |Show system status.|OP     |
 |/zabbigot send  |zabbigot.send  |Send status.       |OP     |
 |/zabbigot reload|zabbigot.reload|Reload the config. |OP     |
 
@@ -46,3 +56,5 @@ TPS may exceed 20, but this is normal behavior to get back the delay.
 
 CUR(Chunk Unload Ratio) represents the chunk loading/unloading ratio.  
 {loaded chunks} is the number of chunks currently loaded.
+
+## Tips: 

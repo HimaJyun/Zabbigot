@@ -19,7 +19,9 @@ public class TsvSender implements StatusSender {
     }
 
     @Override
-    public String send(Collection<Status> data) {
+    public SendResult send(Collection<Status> data) {
+        SendResult result = new SendResult();
+
         try (BufferedWriter writer = Files.newBufferedWriter(
             file, StandardCharsets.UTF_8,
             StandardOpenOption.WRITE,
@@ -28,13 +30,18 @@ public class TsvSender implements StatusSender {
         )) {
 
             for (Status datum : data) {
+                String value = datum.value.get();
+
                 writer.write(datum.key);
                 writer.write('\t');
-                writer.write(datum.value);
+                writer.write(value);
                 writer.newLine();
+
+                result.data.put(datum.key, value);
             }
 
-            return "OK";
+            result.response = "OK";
+            return result;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

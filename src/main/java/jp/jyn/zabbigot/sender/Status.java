@@ -1,25 +1,15 @@
 package jp.jyn.zabbigot.sender;
 
-import java.time.Instant;
+import java.util.function.LongSupplier;
+import java.util.function.Supplier;
 
 public class Status {
     public final String host;
     public final String key;
-    public final String value;
-    public final long clock;
+    public final Supplier<String> value;
+    public final LongSupplier clock;
 
-    public Status(String host, String key, String value) {
-        this(host, key, value, System.currentTimeMillis() / 1000);
-    }
-
-    public Status(String host, String key, String value, Instant clock) {
-        this.host = host;
-        this.key = key;
-        this.value = value;
-        this.clock = clock.getEpochSecond();
-    }
-
-    public Status(String host, String key, String value, long clock) {
+    public Status(String host, String key, Supplier<String> value, LongSupplier clock) {
         this.host = host;
         this.key = key;
         this.value = value;

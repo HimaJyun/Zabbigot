@@ -30,8 +30,9 @@ public class ZabbixSender implements StatusSender {
     }
 
     @Override
-    public String send(Collection<Status> data) {
-        byte[] body = toBytes(toJson(data).getBytes());
+    public SendResult send(Collection<Status> data) {
+        SendResult result = toJson(data);
+        byte[] body = toBytes(result.response.getBytes());
         try (Socket socket = new Socket()) {
             socket.setSoTimeout(timeout);
             socket.connect(new InetSocketAddress(host, port), timeout);
@@ -50,10 +51,10 @@ public class ZabbixSender implements StatusSender {
                     count += read;
                 }
 
-                if (count < 13) {
-                    return "[]";
-                }
-                return new String(buffer, HEADER.length + BYTE64_LENGTH, count - (HEADER.length + BYTE64_LENGTH), StandardCharsets.UTF_8);
+                result.response = count < 13
+                    ? "[]"
+                    : new String(buffer, HEADER.length + BYTE64_LENGTH, count - (HEADER.length + BYTE64_LENGTH), StandardCharsets.UTF_8);
+                return result;
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -81,10 +82,11 @@ public class ZabbixSender implements StatusSender {
         return result;
     }
 
-    private String toJson(Iterable<Status> data) {
+    private SendResult toJson(Iterable<Status> data) {
         // https://www.zabbix.org/wiki/Docs/protocols/zabbix_sender/3.4
         // https://aoishi.hateblo.jp/entry/2017/12/03/014913
 
+        SendResult result = new SendResult();
         StringBuilder builder = new StringBuilder();
         builder.append('{');
         builder.append("\"request\":\"sender data\",");
@@ -100,26 +102,28 @@ public class ZabbixSender implements StatusSender {
             }
             builder.append('{');
 
+            String value = datum.value.get();
+            long clock = datum.clock.getAsLong();
             // clock
-            if (datum.clock != -1) { // -1 for LLD
-                builder.append("\"clock\":");
-                builder.append(datum.clock).append(',');
-            }
+            builder.append("\"clock\":");
+            builder.append(clock).append(',');
             // host
             builder.append("\"host\":");
             Status.jsonStr(datum.host, builder).append(',');
             // key
-            builder.append("\"key\":\"");
+            builder.append("\"key\":");
             Status.jsonStr(datum.key, builder).append(',');
             // value
-            builder.append("\"value\":\"");
-            Status.jsonStr(datum.value, builder);
+            builder.append("\"value\":");
+            Status.jsonStr(value, builder);
+            result.data.put(datum.key, value);
 
             builder.append('}');
         }
         builder.append(']');
 
         builder.append('}');
-        return builder.toString();
+        result.response = builder.toString();
+        return result;
     }
 }

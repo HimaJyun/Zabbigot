@@ -1,0 +1,19 @@
+main: "jp.jyn.zabbigot.Zabbigot"
+name: "Zabbigot"
+version: "${project.version}"
+website: "${project.url}"
+description: "${project.description}"
+author: "HimaJyun( https://jyn.jp/ )"
+api-version: 1.13
+
+commands:
+    zabbigot:
+        description: "Show status."
+
+permissions:
+    zabbigot.show:
+        default: op
+    zabbigot.send:
+        default: op
+    zabbigot.reload:
+        default: op

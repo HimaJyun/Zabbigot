@@ -1,0 +1,30 @@
+# Send interval (Unit: second)
+# Sender stops when set to 0.
+# Please set it to 0 if you want to stop by maintenance etc.
+Interval: 60
+
+# Send method
+# zabbix: Zabbix Sender
+# json: Output to file as json(for systems other than Zabbix)
+# tsv: Output to file as tsv(for systems other than Zabbix)
+Sender: "zabbix"
+
+# Zabbix config.
+Zabbix:
+    Server: "localhost"
+    Port: 10051
+    Hostname: "MinecraftServer"
+    # Use to monitor multiple servers.
+    # Sends the value specified here as an argument.
+    # Example:
+    # Identifier: "Minecraft" -> "minecraft.tps[Minecraft]"
+    # Identifier: "Zabbigot" -> "minecraft.tps[Zabbigot]"
+    Identifier: "Minecraft"
+
+# Stops the output of the specified key.
+Disable:
+    - "example"
+    #- "user"
+
+# Don't touch
+version: 1

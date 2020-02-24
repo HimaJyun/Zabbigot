@@ -24,6 +24,7 @@ type is "Zabbix trapper"
 |minecraft.chunk.loaded  |Loaded chunk count     |Numeric (unsigned)|
 |minecraft.chunk.generate|Generated chunk count  |Numeric (unsigned)|
 |minecraft.chunk.ratio   |Chunk load/unload ratio|Numeric (float)   |
+|minecraft.inventory.move|Inventory move count   |Numeric (unsigned)|
 
 Actually specify an identifier like "minecraft.tps[Minecraft]".  
 Identifiers can be changed from config.yml. (Default: Minecraft)
@@ -55,4 +56,3 @@ TPS may exceed 20, but this is normal behavior to get back the delay.
 
 CUR(Chunk Unload Ratio) represents the chunk loading/unloading ratio.  
 {loaded chunks} is the number of chunks currently loaded.
-

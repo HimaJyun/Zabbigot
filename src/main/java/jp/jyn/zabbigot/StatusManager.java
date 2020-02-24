@@ -144,6 +144,7 @@ public class StatusManager {
             addStatus("chunk.unload", counter.chunkUnload::toString);
             addStatus("chunk.loaded", () -> String.valueOf(counter.chunkLoad.get() - counter.chunkUnload.get()));
             addStatus("chunk.generate", counter.chunkGenerate::toString);
+            addStatus("inventory.move",counter.inventoryMoveItem::toString);
             // (unload/load)*100
             addStatus(
                 "chunk.ratio",

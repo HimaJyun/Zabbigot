@@ -5,6 +5,7 @@ import org.bukkit.World;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.server.ServerListPingEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.ChunkPopulateEvent;
@@ -18,6 +19,7 @@ public class EventCounter implements Listener {
     public final AtomicInteger chunkLoad = new AtomicInteger(0);
     public final AtomicInteger chunkUnload = new AtomicInteger(0);
     public final AtomicInteger chunkGenerate = new AtomicInteger(0);
+    public final AtomicInteger inventoryMoveItem  = new AtomicInteger(0);
 
     public EventCounter() {
         // Get already loaded chunks.
@@ -47,5 +49,10 @@ public class EventCounter implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onChunkPopulate(ChunkPopulateEvent e) {
         chunkGenerate.incrementAndGet();
+    }
+
+    @EventHandler(ignoreCancelled = true,priority = EventPriority.MONITOR)
+    public void onInventoryMoveItemEvent(InventoryMoveItemEvent e) {
+        inventoryMoveItem.incrementAndGet();
     }
 }

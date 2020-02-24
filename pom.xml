@@ -68,9 +68,9 @@
             <id>lib</id>
             <distributionManagement>
                 <repository>
-                    <id>internal.repos</id>
-                    <name>internal repo</name>
-                    <url>file://${project.basedir}/mvn-repo</url>
+                    <id>github</id>
+                    <name>GitHub Packages</name>
+                    <url>https://maven.pkg.github.com/HimaJyun/Zabbigot</url>
                 </repository>
             </distributionManagement>
             <build>

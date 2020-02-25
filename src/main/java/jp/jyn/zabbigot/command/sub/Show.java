@@ -1,6 +1,5 @@
 package jp.jyn.zabbigot.command.sub;
 
-import jp.jyn.zabbigot.EventCounter;
 import jp.jyn.zabbigot.TpsWatcher;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -16,20 +15,18 @@ public class Show implements CommandExecutor {
     private final static BigDecimal DECIMAL_MB = BigDecimal.valueOf(1024 * 1024);
 
     private final TpsWatcher watcher;
-    private final EventCounter counter;
 
-    public Show(TpsWatcher watcher, EventCounter counter) {
+    public Show(TpsWatcher watcher) {
         this.watcher = watcher;
-        this.counter = counter;
     }
-    
+
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         /*
          * ======== Zabbigot (Player: 0/20) ========
          * TPS: [####################] 20.00 (100.0%)
          * MEM: [###################_] 7832.4MB/8192.0MB (95.6%)
-         * CUR: [###############_____] 585 (75.4%)
+         * Chunk: 585, Entity: 389
          */
 
         sender.sendMessage(String.format(
@@ -43,7 +40,10 @@ public class Show implements CommandExecutor {
 
         sender.sendMessage(tickPerSecond());
         sender.sendMessage(memoryUsage());
-        sender.sendMessage(chunkUnloadRatio());
+        sender.sendMessage(String.format(
+            "Chunk: %d",
+            Bukkit.getWorlds().stream().mapToInt(w -> w.getLoadedChunks().length).sum()
+        ));
         return true;
     }
 
@@ -68,19 +68,6 @@ public class Show implements CommandExecutor {
             gauge(ratio.multiply(DECIMAL_20).intValue()),
             free.divide(DECIMAL_MB, 1, RoundingMode.DOWN).toPlainString(),
             total.divide(DECIMAL_MB, 1, RoundingMode.DOWN).toPlainString(),
-            ratio.scaleByPowerOfTen(2).setScale(1, RoundingMode.DOWN).toPlainString()
-        );
-    }
-
-    private String chunkUnloadRatio() {
-        int load = counter.chunkLoad.get();
-        int unload = counter.chunkUnload.get();
-        BigDecimal ratio = BigDecimal.valueOf(unload).divide(BigDecimal.valueOf(load), 3, RoundingMode.DOWN);
-
-        return String.format(
-            "CUR: [%s] %d (%s%%)",
-            gauge(ratio.multiply(DECIMAL_20).intValue()),
-            load - unload,
             ratio.scaleByPowerOfTen(2).setScale(1, RoundingMode.DOWN).toPlainString()
         );
     }

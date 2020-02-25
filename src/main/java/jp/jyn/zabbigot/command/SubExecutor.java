@@ -1,6 +1,5 @@
 package jp.jyn.zabbigot.command;
 
-import jp.jyn.zabbigot.EventCounter;
 import jp.jyn.zabbigot.TpsWatcher;
 import jp.jyn.zabbigot.Zabbigot;
 import jp.jyn.zabbigot.command.sub.Reload;
@@ -22,11 +21,11 @@ public class SubExecutor implements CommandExecutor, TabCompleter {
     private final Map<String, CommandExecutor> commands = new HashMap<>();
     private final static String NO_ARGS = "show";
 
-    public SubExecutor(Zabbigot zabbigot, TpsWatcher watcher, EventCounter counter) {
+    public SubExecutor(Zabbigot zabbigot, TpsWatcher watcher) {
         commands.put("send", new Send(zabbigot));
         commands.put("reload", new Reload(zabbigot));
 
-        commands.put(NO_ARGS, new Show(watcher, counter));
+        commands.put(NO_ARGS, new Show(watcher));
     }
 
     @Override

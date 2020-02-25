@@ -25,6 +25,7 @@ type is "Zabbix trapper"
 |minecraft.chunk.generate|Generated chunk count  |Numeric (unsigned)|
 |minecraft.chunk.ratio   |Chunk load/unload ratio|Numeric (float)   |
 |minecraft.inventory.move|Inventory move count   |Numeric (unsigned)|
+|minecraft.entity.count  |Entity count           |Numeric (unsigned)|
 
 Actually specify an identifier like "minecraft.tps[Minecraft]".  
 Identifiers can be changed from config.yml. (Default: Minecraft)
@@ -49,10 +50,7 @@ Please send the value written in the file to your system.
 ======== Zabbigot (Player: {online player}/{max player}) ========
 TPS: [####################] {tps} ({tps}%)
 MEM: [###################_] {free}MB/{total}MB ({free}%)
-CUR: [###############_____] {loaded chunks} ({unload ratio}%)
+Chunk: {loaded chunks}, Entity: {Entity count}
 ```
 
 TPS may exceed 20, but this is normal behavior to get back the delay.
-
-CUR(Chunk Unload Ratio) represents the chunk loading/unloading ratio.  
-{loaded chunks} is the number of chunks currently loaded.

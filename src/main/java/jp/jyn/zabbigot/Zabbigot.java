@@ -30,20 +30,8 @@ public class Zabbigot extends JavaPlugin {
         BukkitTask task = getServer().getScheduler().runTaskTimer(this, watcher, 0, 1);
         destructor.addFirst(task::cancel);
 
-        // start Event count
-        EventCounter event = new EventCounter();
-        getServer().getPluginManager().registerEvents(event, this);
-        destructor.addFirst(() -> HandlerList.unregisterAll(this));
-
         // StatusManager
-        manager = new StatusManager.Builder(config.sender)
-            .setHost(config.hostname)
-            .setKeyConverter(config.keyConverter)
-            .addDisabledKeys(config.disable)
-            .addDefaultStatus(watcher, event)
-            .build();
-
-        // status sender
+        manager = new StatusManager(config.hostname, config.sender, config.keyConverter);
         if (config.interval > 0) {
             ScheduledFuture<?> future = pool.scheduleAtFixedRate(
                 manager::send,
@@ -54,8 +42,12 @@ public class Zabbigot extends JavaPlugin {
             destructor.addFirst(() -> future.cancel(false));
         }
 
+        // start Event count
+        EventCounter event = new EventCounter(this, watcher, manager, config.disable);
+        destructor.addFirst(() -> HandlerList.unregisterAll(this));
+
         // command
-        SubExecutor executor = new SubExecutor(this, watcher, event);
+        SubExecutor executor = new SubExecutor(this, watcher);
         PluginCommand command = getCommand("zabbigot");
         command.setExecutor(executor);
         command.setTabCompleter(executor);

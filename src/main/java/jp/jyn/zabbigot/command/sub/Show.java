@@ -41,8 +41,9 @@ public class Show implements CommandExecutor {
         sender.sendMessage(tickPerSecond());
         sender.sendMessage(memoryUsage());
         sender.sendMessage(String.format(
-            "Chunk: %d",
-            Bukkit.getWorlds().stream().mapToInt(w -> w.getLoadedChunks().length).sum()
+            "Chunk: %d, Entity: %d",
+            Bukkit.getWorlds().stream().mapToInt(w -> w.getLoadedChunks().length).sum(),
+            Bukkit.getWorlds().stream().mapToInt(w -> w.getEntities().size()).sum()
         ));
         return true;
     }

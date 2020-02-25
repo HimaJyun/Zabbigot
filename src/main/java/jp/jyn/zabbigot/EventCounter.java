@@ -1,7 +1,6 @@
 package jp.jyn.zabbigot;
 
 import org.bukkit.Bukkit;
-import org.bukkit.World;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -55,12 +54,7 @@ public class EventCounter implements Listener {
             !disable.contains(StatusKey.CHUNK_RATIO)) {
             register.accept(ChunkLoadEvent.class, (l, e) -> chunkLoad.incrementAndGet());
             // Get already loaded chunks.
-            chunkLoad.getAndAdd(
-                Bukkit.getWorlds().stream()
-                    .map(World::getLoadedChunks)
-                    .mapToInt(c -> c.length)
-                    .sum()
-            );
+            chunkLoad.getAndAdd(Bukkit.getWorlds().stream().mapToInt(w -> w.getLoadedChunks().length).sum());
         }
 
         if (!disable.contains(StatusKey.CHUNK_UNLOAD) ||
@@ -105,5 +99,8 @@ public class EventCounter implements Listener {
                 .toPlainString()
         );
         tmp.accept(StatusKey.INVENTORY_MOVE, inventoryMove::toString);
+        tmp.accept(StatusKey.ENTITY_COUNT, () -> String.valueOf(
+            Bukkit.getWorlds().stream().mapToInt(w -> w.getEntities().size()).sum()
+        ));
     }
 }

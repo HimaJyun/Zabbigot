@@ -11,7 +11,8 @@ public enum StatusKey {
     CHUNK_LOADED("chunk.loaded"),
     CHUNK_GENERATE("chunk.generate"),
     CHUNK_RATIO("chunk.ratio"),
-    INVENTORY_MOVE("inventory.move");
+    INVENTORY_MOVE("inventory.move"),
+    ENTITY_COUNT("entity.count");
 
     public final String key;
     StatusKey(String key) {this.key = key;}

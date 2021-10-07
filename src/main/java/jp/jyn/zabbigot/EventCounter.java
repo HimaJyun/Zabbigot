@@ -99,8 +99,14 @@ public class EventCounter implements Listener {
                 .toPlainString()
         );
         tmp.accept(StatusKey.INVENTORY_MOVE, inventoryMove::toString);
-        tmp.accept(StatusKey.ENTITY_COUNT, () -> String.valueOf(
-            Bukkit.getWorlds().stream().mapToInt(w -> w.getEntities().size()).sum()
-        ));
+        tmp.accept(StatusKey.ENTITY_COUNT, () -> {
+            try {
+                return String.valueOf(Bukkit.getScheduler().callSyncMethod(plugin,
+                    ()-> Bukkit.getWorlds().stream().mapToInt(w -> w.getEntities().size()).sum()
+                ).get());
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 }

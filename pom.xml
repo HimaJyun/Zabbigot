@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>jp.jyn</groupId>
     <artifactId>Zabbigot</artifactId>
-    <version>1.4.0</version>
+    <version>1.4.1</version>
     <url>https://github.com/HimaJyun/Zabbigot</url>
     <description>Bukkit plugin for Zabbix monitoring.</description>
     <properties>
